@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import statistics as st
 import math
 import pprint as pr
@@ -23,9 +17,6 @@ poll_egnatia2=pd.read_excel('Pollution_2014_2016_version_1.xlsx',sheet_name='Σ�
 # # Δημιουργία αρχείου μετεωρολογικών χαρακτηριστικών και αρχείου PM10
 # Μετατροπή σε αριθμητικά δεδομένα και τοποθέτηση NaN όπου βρίσκει κενό (errors='coerse')
 
-# In[2]:
-
-
 meteo_data=[]
 meteo_data=pd.DataFrame(meteo_data)
 meteo_data['Date']=meteo_egnatia.loc[7:,'Station:']
@@ -42,9 +33,6 @@ meteo_data['RH']=pd.to_numeric(meteo_data['RH'],errors='coerce')
 meteo_data['Date']=pd.to_datetime(meteo_data['Date'])
 
 
-# In[3]:
-
-
 poll_data=[]
 poll_data=pd.DataFrame(poll_data)
 poll_data['Date']=poll_egnatia1.loc[:,'Ημερο -\nμηνία'].append(poll_egnatia2.loc[:,'Ημερο -\nμηνία'],
@@ -54,25 +42,11 @@ poll_data['PM10']=pd.to_numeric(poll_data['PM10'],errors='coerce')
 
 
 # # Μετατροπή διεύθυνσης ανέμου σε ημιτονοειδή μορφή
-
-# In[4]:
-
-
 meteo_data['WD-V']=np.sin(meteo_data['WD-V']*np.pi/180)    #Convert to radians
-
-
-# In[5]:
-
-
-meteo_data
 
 
 # # Διαχωρισμός προηγούμενου αρχείου σε περιόδους '13-'15 και '16
 # Ο διαχωρισμός έγινε με βάση την ημερομηνία και τα δύο αρχεία συνενώθηκαν για τη δημιουργία του training_set και του test_set.
-
-# In[6]:
-
-
 meteo_data1315=[]
 meteo_data1315=pd.DataFrame(meteo_data1315)
 meteo1315_temp1=[]
@@ -102,9 +76,6 @@ meteo1315['RH']=meteo1315_temp2['RH']
 meteo1315
 
 
-# In[7]:
-
-
 poll1315=[]
 poll1315=pd.DataFrame(poll1315)
 
@@ -115,11 +86,8 @@ poll1315=poll_data.iloc[start_date_poll13:end_date_poll15+1]
 poll1315=poll1315.reset_index(drop=True)
 
 
-# Για τα δύο σετ κάναμε κλώνο τη στήλη του PM10 και τη μετακινήσαμε μία θέση κάτω, ώστε να έχουμε στην ίδια ημερομηνία και το PM10 της προηγούμενης μέρας για να μπορούμε να ελέγξουμε αν υπάρχουν NaN. Στη συνέχεια πετάξαμε έξω όσες σειρές είχαν έλλειψη έστω και σε μία στήλη.
-
-# In[8]:
-
-
+# Για τα δύο σετ κάναμε κλώνο τη στήλη του PM10 και τη μετακινήσαμε μία θέση κάτω, ώστε να έχουμε στην ίδια ημερομηνία και το PM10 της προηγούμενης 
+# μέρας για να μπορούμε να ελέγξουμε αν υπάρχουν NaN. Στη συνέχεια πετάξαμε έξω όσες σειρές είχαν έλλειψη έστω και σε μία στήλη.
 training_set=[]
 training_set=pd.DataFrame(training_set)
 training_set[['Date','WS-V','WD-V','Tout','RH']]=meteo1315[['Date','WS-V','WD-V','Tout','RH']]
@@ -129,9 +97,6 @@ training_set['PM10-PD']=training_set['PM10-PD'].shift()
 training_set=training_set.dropna()
 training_set=training_set.reset_index(drop=True)
 training_set
-
-
-# In[9]:
 
 
 meteo_data16=[]
@@ -162,9 +127,6 @@ meteo16['Tout']=meteo16_temp2['Tout']
 meteo16['RH']=meteo16_temp2['RH']
 
 
-# In[10]:
-
-
 poll16=[]
 poll16=pd.DataFrame(poll16)
 
@@ -173,9 +135,6 @@ end_date_poll16=int(poll_data[poll_data['Date']=='2016/12/31'].index.values)
 
 poll16=poll_data.iloc[start_date_poll16:end_date_poll16+1]
 poll16=poll16.reset_index(drop=True)
-
-
-# In[11]:
 
 
 test_set=[]
@@ -187,9 +146,6 @@ test_set['PM10-PD']=test_set['PM10-PD'].shift()
 test_set=test_set.dropna()
 test_set=test_set.reset_index(drop=True)
 test_set
-
-
-# In[12]:
 
 
 total_data=[]
@@ -226,9 +182,6 @@ def show_raw_visualization(data):
 show_raw_visualization(total_data)
 
 
-# In[13]:
-
-
 def show_heatmap(data,title):
     plt.matshow(data.corr())
     plt.xticks(np.arange(data.shape[1]), data.columns, fontsize=14, rotation=90)
@@ -242,18 +195,15 @@ def show_heatmap(data,title):
     
 show_heatmap(training_set.iloc[:,[1,2,3,4,6]],"Feature Correlation Heatmap\nfor Training Set")
 show_heatmap(test_set.iloc[:,[1,2,3,4,6]],"Feature Correlation Heatmap\nfor Test Set")
-show_heatmap(pd.concat((training_set.iloc[:,[1,2,3,4,6]],                        test_set.iloc[:,[1,2,3,4,6]])),"Feature Correlation Heatmap")
+show_heatmap(pd.concat((training_set.iloc[:,[1,2,3,4,6]],test_set.iloc[:,[1,2,3,4,6]])),"Feature Correlation Heatmap")
 
 
 # # Boxplot
-
-# In[14]:
-
-
 import seaborn as sns
 boxplot_data=[]
 boxplot_data=pd.DataFrame(boxplot_data)
-boxplot_data[['WS-V','WD-V','Tout','RH','PM10']]=training_set[['WS-V','WD-V','Tout','RH','PM10']]                            .append(test_set[['WS-V','WD-V','Tout','RH','PM10']],ignore_index=True)
+boxplot_data[['WS-V','WD-V','Tout','RH','PM10']]=training_set[['WS-V','WD-V','Tout','RH','PM10']].append(test_set[['WS-V','WD-V','Tout','RH','PM10']],\
+                                                                                                         ignore_index=True)
 boxplot_keys=boxplot_data.keys()
 boxplot_data=boxplot_data.melt(var_name='Column', value_name='Normalized')
 plt.figure(figsize=(12, 6))
@@ -262,10 +212,6 @@ _=ax.set_xticklabels(boxplot_keys, rotation=90)
 
 
 # # Κανονικοποίηση
-
-# In[15]:
-
-
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
@@ -280,17 +226,13 @@ test_set=test_set[['WS-V','WD-V','Tout','RH','PM10-PD','PM10']]
 training_set_scaled=((training_set-training_set.mean())/training_set.std()).values
 test_set_scaled=((test_set-test_set.mean())/test_set.std()).values
 
-x_train=training_set_scaled[:,0:5].reshape(training_set_scaled[:,0:5]                                           .shape[0],1,training_set_scaled[:,0:5].shape[1])
+x_train=training_set_scaled[:,0:5].reshape(training_set_scaled[:,0:5].shape[0],1,training_set_scaled[:,0:5].shape[1])
 y_train=training_set_scaled[:,-1].reshape(training_set_scaled[:,-1].shape[0],1)
 x_test=test_set_scaled[:,0:5].reshape(test_set_scaled[:,0:5].shape[0],1,test_set_scaled[:,0:5].shape[1])
 y_test=test_set_scaled[:,-1].reshape(test_set_scaled[:,-1].shape[0],1)
 
 
 # # Boxplot to normalized data
-
-# In[16]:
-
-
 import seaborn as sns
 
 boxplot_Norm_data=np.concatenate((training_set_scaled,test_set_scaled))
@@ -303,9 +245,6 @@ _=ax.set_xticklabels(boxplot_Norm_keys, rotation=90)
 
 
 # # Artificial Neural Network
-
-# In[17]:
-
 
 batch_size=1049
 epochs=1000
@@ -340,9 +279,6 @@ model.compile(optimizer='adam', loss='mean_absolute_error',metrics=['mean_square
 model.summary()
 
 
-# In[18]:
-
-
 from keras.callbacks import EarlyStopping
 
 earlystopping=EarlyStopping(monitor='mean_squared_error', patience=40, verbose=1, mode='auto')
@@ -355,9 +291,6 @@ model_history=model.fit(
     batch_size=batch_size,
     callbacks=[earlystopping]
 )
-
-
-# In[19]:
 
 
 def visualize_loss(model_history, title):
@@ -376,8 +309,6 @@ def visualize_loss(model_history, title):
 visualize_loss(model_history, "Training and Validation Loss")
 
 
-# In[20]:
-
 
 plt.figure(figsize=(6,6))
 plt.plot(model_history.history['val_r_square'])
@@ -391,17 +322,11 @@ plt.show()
 
 # # Πρόβλεψη
 
-# In[21]:
-
-
 y_pred_train=model.predict(x_train) # Από το train set
 y_pred_test=model.predict(x_test)   # Από το test set
 
 
 # # Συντελεστής συσχέτισης R^2
-
-# In[22]:
-
 
 r2_train=r2_score(y_train,y_pred_train.reshape(-1,1))
 print('From r2_score about training set R^2 =',r2_train)
@@ -415,9 +340,6 @@ print('From model about test set R^2 =    ',model_history.history['val_r_square'
 
 
 # # Στατιστικά
-
-# In[23]:
-
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
@@ -446,9 +368,6 @@ print("Bias from test set:                           ",bias_test)
 
 # # Αποκανονικοποίηση
 
-# In[24]:
-
-
 # Training Set
 y_train_unNorm=y_train*training_set['PM10'].std()+training_set['PM10'].mean()
 y_pred_train_unNorm=y_pred_train*training_set['PM10'].std()+training_set['PM10'].mean()
@@ -459,9 +378,6 @@ y_pred_test_unNorm=y_pred_test*test_set['PM10'].std()+test_set['PM10'].mean()
 
 
 # # Comparison Plots
-
-# In[25]:
-
 
 from sklearn.linear_model import LinearRegression
 plt.figure(figsize=(5,5))
@@ -478,9 +394,6 @@ plt.xlabel('PM10')
 plt.ylabel('Predicted PM10')
 plt.legend()
 plt.show()
-
-
-# In[26]:
 
 
 plt.figure(figsize=(5,5))
